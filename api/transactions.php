@@ -13,8 +13,9 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        // Get all transactions
-        $stmt = $pdo->query("SELECT t.*, c.name as category_name FROM transactions t LEFT JOIN categories c ON t.category_id = c.id ORDER BY t.transaction_date DESC");
+        // Get all transactions for the logged-in user
+        $stmt = $pdo->prepare("SELECT t.*, c.name as category_name FROM transactions t LEFT JOIN categories c ON t.category_id = c.id WHERE t.user_id = ? ORDER BY t.transaction_date DESC");
+        $stmt->execute([$user_id]);
         $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode($transactions);
         break;
@@ -40,11 +41,11 @@ switch ($method) {
                 }
             }
 
-            $sql = "INSERT INTO transactions (source, amount, type, category_id, transaction_date) VALUES (?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO transactions (user_id, source, amount, type, category_id, transaction_date) VALUES (?, ?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
             $date = !empty($data->date) ? $data->date : date('Y-m-d H:i:s');
             
-            if ($stmt->execute([$data->source, $data->amount, $data->type, $cat_id, $date])) {
+            if ($stmt->execute([$user_id, $data->source, $data->amount, $data->type, $cat_id, $date])) {
                 echo json_encode(["message" => "Transaction created", "id" => $pdo->lastInsertId()]);
             } else {
                 http_response_code(503);
@@ -86,8 +87,10 @@ switch ($method) {
             }
 
             if (count($fields) > 0) {
+                // Add user_id check to ensure ownership
                 $params[] = $data->id;
-                $sql = "UPDATE transactions SET " . implode(", ", $fields) . " WHERE id = ?";
+                $params[] = $user_id;
+                $sql = "UPDATE transactions SET " . implode(", ", $fields) . " WHERE id = ? AND user_id = ?";
                 $stmt = $pdo->prepare($sql);
                 if ($stmt->execute($params)) {
                     echo json_encode(["message" => "Transaction updated"]);
@@ -102,8 +105,8 @@ switch ($method) {
     case 'DELETE':
         // Delete transaction
         if (isset($_GET['id'])) {
-            $stmt = $pdo->prepare("DELETE FROM transactions WHERE id = ?");
-            if ($stmt->execute([$_GET['id']])) {
+            $stmt = $pdo->prepare("DELETE FROM transactions WHERE id = ? AND user_id = ?");
+            if ($stmt->execute([$_GET['id'], $user_id])) {
                 echo json_encode(["message" => "Transaction deleted"]);
             } else {
                 http_response_code(503);

@@ -152,17 +152,11 @@ class Store {
         }
     }
 
-    async logout() {
-        try {
-            await fetch(`${API_URL}/auth.php?action=logout`);
-        } catch (e) {
-            console.error('Logout failed:', e);
-        } finally {
-            this.data.user = null;
-            localStorage.removeItem('user');
-            localStorage.removeItem('isLoggedIn');
-            window.location.href = 'login.php';
-        }
+    logout() {
+        this.data.user = null;
+        localStorage.removeItem('user');
+        localStorage.removeItem('isLoggedIn');
+        window.location.href = 'logout.php';
     }
 
     async updateProfile(data) {
