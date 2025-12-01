@@ -1,0 +1,111 @@
+/* Global Styles */
+body { 
+    background-color: #f3f4f6; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+}
+
+.app-container { 
+    max-width: 480px; 
+    margin: 0 auto; 
+    background: white; 
+    min-height: 100vh; 
+    position: relative; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+    overflow: hidden; /* Prevent double scrollbars */
+}
+
+/* Hide scrollbar for clean look */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none;  scrollbar-width: none; }
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-pulse-once {
+    animation: pulse-once 0.5s ease-out;
+}
+
+@keyframes pulse-once {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+/* Glassmorphism utilities */
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Dark Mode */
+body.dark {
+    background-color: #111827;
+    color: #f3f4f6;
+}
+
+body.dark .app-container {
+    background: #1f2937;
+    color: #f3f4f6;
+}
+
+body.dark .bg-white {
+    background-color: #374151 !important;
+    color: #f3f4f6 !important;
+}
+
+body.dark .text-gray-800 {
+    color: #f3f4f6 !important;
+}
+
+body.dark .text-gray-700 {
+    color: #e5e7eb !important;
+}
+
+body.dark .text-gray-600 {
+    color: #d1d5db !important;
+}
+
+body.dark .text-gray-500 {
+    color: #9ca3af !important;
+}
+
+body.dark .bg-gray-50 {
+    background-color: #4b5563 !important;
+    color: #f3f4f6 !important;
+    border-color: #6b7280 !important;
+}
+
+body.dark .bg-gray-100 {
+    background-color: #374151 !important;
+}
+
+body.dark .border-gray-100 {
+    border-color: #4b5563 !important;
+}
+
+body.dark .border-gray-200 {
+    border-color: #4b5563 !important;
+}
+
+body.dark input, body.dark select {
+    background-color: #4b5563 !important;
+    color: #f3f4f6 !important;
+    border-color: #6b7280 !important;
+}
+
+body.dark .shadow-sm {
+    box-shadow: none !important;
+}
+
+body.dark .donut-inner {
+    background-color: #1f2937 !important;
+}
