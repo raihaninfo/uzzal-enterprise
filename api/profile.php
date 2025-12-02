@@ -11,7 +11,7 @@ $user_id = $_SESSION['user_id'];
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
-    $stmt = $pdo->prepare("SELECT name, phone, business_name FROM users WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT id, name, phone, business_name, role FROM users WHERE id = ?");
     $stmt->execute([$user_id]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     

@@ -10,6 +10,11 @@ if (!isset($_SESSION['user_id']) && !in_array($current_page, $public_pages)) {
     header("Location: login.php");
     exit;
 }
+
+if (isset($_SESSION['user_id']) && $current_page === 'login.php') {
+    header("Location: index.php");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="bn">
@@ -21,6 +26,7 @@ if (!isset($_SESSION['user_id']) && !in_array($current_page, $public_pages)) {
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Custom Toggle Switch CSS */
         .toggle-checkbox:checked {

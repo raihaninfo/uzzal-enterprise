@@ -154,25 +154,31 @@
             todaysTx.forEach(item => {
                 const isIncome = item.type === 'income';
                 const colorClass = isIncome ? 'text-green-600' : 'text-red-600';
-                const borderClass = isIncome ? 'border-green-500' : 'border-red-500';
-                const sign = isIncome ? '+' : '-';
-
+                
                 const el = document.createElement('div');
-                el.className = `flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border-l-4 ${borderClass} animate-fade-in`;
+                el.className = 'bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center';
                 el.innerHTML = `
-    <div>
-        <h4 class="font-bold text-gray-800 text-sm">${item.source}</h4>
-        <p class="text-xs text-gray-500">${UI.formatTime(item.transaction_date)} • ${isIncome ? 'আয়' : 'ব্যয়'}</p>
-    </div>
-    <span class="font-bold ${colorClass}">${sign}${UI.formatCurrency(item.amount)}</span>
-`;
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full ${isIncome ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'} flex items-center justify-center">
+                            <i class="fas ${isIncome ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 text-sm">${item.source}</h4>
+                            <p class="text-xs text-gray-500">${item.category || 'General'}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <h4 class="font-bold ${colorClass}">৳ ${item.amount}</h4>
+                        <p class="text-[10px] text-gray-400 mt-1"><i class="far fa-clock"></i> ${new Date(item.transaction_date).toLocaleTimeString('bn-BD', {hour: '2-digit', minute:'2-digit'})}</p>
+                    </div>
+                `;
                 list.appendChild(el);
             });
         }
-
-        document.getElementById('todayIncome').innerText = stats.income.toLocaleString();
-        document.getElementById('todayExpense').innerText = stats.expense.toLocaleString();
-        document.getElementById('todayBalance').innerText = stats.balance.toLocaleString();
+        
+        document.getElementById('todayIncome').innerText = UI.formatCurrency(stats.income);
+        document.getElementById('todayExpense').innerText = UI.formatCurrency(stats.expense);
+        document.getElementById('todayBalance').innerText = UI.formatCurrency(stats.balance);
     }
 
     let editId = null;
@@ -200,7 +206,7 @@
             amountInput.value = '';
             renderToday();
         } else {
-            alert('অনুগ্রহ করে বিবরণ এবং টাকার পরিমাণ দিন');
+            UI.alert('ত্রুটি', 'টাকার পরিমান ও বিবরন উল্লেখ করুন', 'error');
         }
     }
 
@@ -248,6 +254,15 @@
             const tx = transactions.find(t => t.id == editId); // Loose equality for string/int match
 
             if (tx) {
+                // Permission Check
+                const user = store.getUser();
+                if (user.role !== 'admin' && tx.user_id != user.id) {
+                    UI.alert('অনুমতি নেই', 'এটি ডিলেট বা আপডেট করার আপনার অনুমতি নেই', 'error');
+                    // Clear URL param
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    return;
+                }
+
                 document.getElementById('sourceInput').value = tx.source;
                 document.getElementById('amountInput').value = tx.amount;
                 document.getElementById('categoryInput').value = tx.category_name || tx.category || 'General';
@@ -286,13 +301,27 @@
     }
 
     async function addNewCategory() {
-        const name = prompt("নতুন ক্যাটাগরির নাম লিখুন:");
+        const { value: name } = await Swal.fire({
+            title: 'নতুন ক্যাটাগরি',
+            input: 'text',
+            inputLabel: 'ক্যাটাগরির নাম লিখুন',
+            showCancelButton: true,
+            confirmButtonText: 'যোগ করুন',
+            cancelButtonText: 'বাতিল',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'নাম লিখতে হবে!';
+                }
+            }
+        });
+
         if (name) {
             if (await store.addCategory(name)) {
                 await updateCategories();
                 document.getElementById('categoryInput').value = name;
+                UI.toast('ক্যাটাগরি যোগ করা হয়েছে');
             } else {
-                alert("এই ক্যাটাগরি ইতিমধ্যে আছে!");
+                UI.alert('ত্রুটি', 'এই ক্যাটাগরি ইতিমধ্যে আছে!', 'error');
             }
         }
     }

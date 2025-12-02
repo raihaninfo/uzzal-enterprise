@@ -51,64 +51,76 @@
     </div>
 
     <div class="flex-1 p-5 overflow-y-auto pb-24 no-scrollbar">
-
-        <div class="mb-8 relative">
-            <div class="donut-chart shadow-lg" id="chart">
-                <div class="donut-inner">
-                    <p class="text-xs text-gray-400">বর্তমান ব্যালেন্স</p>
-                    <h2 class="text-xl font-bold text-gray-800" id="totalBalance">0</h2>
-                </div>
-            </div>
-
-            <div class="flex justify-center gap-6 mt-6" id="chartLegend">
-                <!-- Legend injected here -->
-            </div>
-        </div>
-
-        <h3 class="font-bold text-gray-700 mb-3 text-sm">সংক্ষিপ্ত পরিসংখ্যান</h3>
-        <div class="grid grid-cols-2 gap-3">
-
-            <div class="bg-green-50 p-4 rounded-xl border border-green-100">
-                <i class="fas fa-arrow-down text-green-500 mb-2 text-xl"></i>
-                <p class="text-xs text-gray-500">মোট আয়</p>
-                <h4 class="font-bold text-gray-800 text-lg" id="totalIncome">0</h4>
-            </div>
-
-            <div class="bg-red-50 p-4 rounded-xl border border-red-100">
-                <i class="fas fa-arrow-up text-red-500 mb-2 text-xl"></i>
-                <p class="text-xs text-gray-500">মোট ব্যয়</p>
-                <h4 class="font-bold text-gray-800 text-lg" id="totalExpense">0</h4>
-            </div>
-
-            <div class="bg-purple-50 p-4 rounded-xl border border-purple-100">
-                <i class="fas fa-calendar-check text-purple-500 mb-2 text-xl"></i>
-                <p class="text-xs text-gray-500">কর্মদিবস</p>
-                <h4 class="font-bold text-gray-800 text-lg" id="workDays">0 দিন</h4>
-            </div>
-
-            <div class="bg-orange-50 p-4 rounded-xl border border-orange-100">
-                <i class="fas fa-file-invoice text-orange-500 mb-2 text-xl"></i>
-                <p class="text-xs text-gray-500">মোট এন্ট্রি</p>
-                <h4 class="font-bold text-gray-800 text-lg" id="totalEntries">0 টি</h4>
-            </div>
-        </div>
-
-        <!-- Detailed Transactions Table -->
-        <div class="mt-8" id="printableArea">
+        
+        <div id="printableArea">
+            <!-- Report Header (Visible in PDF) -->
             <div class="text-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800">উজ্জল এন্টারপ্রাইজ</h2>
                 <p class="text-gray-500">আয়-ব্যয়ের হিসাব</p>
                 <p class="text-xs text-gray-400 mt-1">তারিখ: <span id="reportDate"></span></p>
+                <p class="text-xs text-blue-600 font-semibold mt-1" id="filterRange"></p>
             </div>
 
+            <!-- Chart Section -->
+            <div class="mb-8 relative">
+                <div class="donut-chart shadow-lg" id="chart">
+                    <div class="donut-inner">
+                        <p class="text-xs text-gray-400">বর্তমান ব্যালেন্স</p>
+                        <h2 class="text-xl font-bold text-gray-800" id="totalBalance">0</h2>
+                    </div>
+                </div>
+
+                <div class="flex justify-center gap-6 mt-6" id="chartLegend">
+                    <!-- Legend injected here -->
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <h3 class="font-bold text-gray-700 mb-3 text-sm">সংক্ষিপ্ত পরিসংখ্যান</h3>
+            <div class="grid grid-cols-2 gap-3 mb-6">
+
+                <div class="bg-green-50 p-4 rounded-xl border border-green-100">
+                    <i class="fas fa-arrow-down text-green-500 mb-2 text-xl"></i>
+                    <p class="text-xs text-gray-500">মোট আয়</p>
+                    <h4 class="font-bold text-gray-800 text-lg" id="totalIncome">0</h4>
+                </div>
+
+                <div class="bg-red-50 p-4 rounded-xl border border-red-100">
+                    <i class="fas fa-arrow-up text-red-500 mb-2 text-xl"></i>
+                    <p class="text-xs text-gray-500">মোট ব্যয়</p>
+                    <h4 class="font-bold text-gray-800 text-lg" id="totalExpense">0</h4>
+                </div>
+
+                <div class="bg-purple-50 p-4 rounded-xl border border-purple-100">
+                    <i class="fas fa-calendar-check text-purple-500 mb-2 text-xl"></i>
+                    <p class="text-xs text-gray-500">কর্মদিবস</p>
+                    <h4 class="font-bold text-gray-800 text-lg" id="workDays">0 দিন</h4>
+                </div>
+
+                <div class="bg-orange-50 p-4 rounded-xl border border-orange-100">
+                    <i class="fas fa-file-invoice text-orange-500 mb-2 text-xl"></i>
+                    <p class="text-xs text-gray-500">মোট এন্ট্রি</p>
+                    <h4 class="font-bold text-gray-800 text-lg" id="totalEntries">0 টি</h4>
+                </div>
+            </div>
+
+            <!-- Category Summary -->
+            <div class="mb-6">
+                <h3 class="font-bold text-gray-700 mb-3 text-sm">খরচের খাতসমূহ</h3>
+                <div class="grid grid-cols-2 gap-2" id="categorySummary">
+                    <!-- Categories injected here -->
+                </div>
+            </div>
+
+            <!-- Transaction Table -->
             <h3 class="font-bold text-gray-700 mb-3 text-sm">বিস্তারিত লেনদেন</h3>
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <table class="w-full text-sm text-left">
+                <table class="w-full text-left border-collapse">
                     <thead class="bg-gray-50 text-gray-500 font-bold border-b border-gray-100">
                         <tr>
-                            <th class="p-3">তারিখ</th>
-                            <th class="p-3">বিবরণ</th>
-                            <th class="p-3 text-right">পরিমাণ</th>
+                            <th class="p-3 text-xs uppercase tracking-wider">তারিখ</th>
+                            <th class="p-3 text-xs uppercase tracking-wider">বিবরণ</th>
+                            <th class="p-3 text-right text-xs uppercase tracking-wider">পরিমাণ</th>
                         </tr>
                     </thead>
                     <tbody id="transactionTableBody" class="divide-y divide-gray-50">
@@ -262,7 +274,7 @@
                 const row = `
                     <tr class="hover:bg-gray-50 transition">
                         <td class="p-3 text-gray-600 text-xs">
-                            ${new Date(t.transaction_date).toLocaleDateString('bn-BD')}
+                            ${new Date(t.transaction_date.replace(' ', 'T')).toLocaleString('bn-BD', { dateStyle: 'medium', timeStyle: 'short' })}
                             <br><span class="text-[10px] text-gray-400">${t.category_name || 'General'}</span>
                         </td>
                         <td class="p-3 font-medium text-gray-700">${t.source}</td>
@@ -281,6 +293,34 @@
                     <td class="p-3 text-right font-bold text-blue-600 text-base">${UI.formatCurrency(balance)}</td>
                 </tr>
             `;
+
+            // Date Range Display
+            if (transactions.length > 0) {
+                const dates = transactions.map(t => new Date(t.transaction_date));
+                const minDate = new Date(Math.min.apply(null, dates));
+                const maxDate = new Date(Math.max.apply(null, dates));
+                document.getElementById('filterRange').innerText = 
+                    `${minDate.toLocaleDateString('bn-BD')} - ${maxDate.toLocaleDateString('bn-BD')}`;
+            } else {
+                document.getElementById('filterRange').innerText = '';
+            }
+
+            // Category Summary Logic
+            const expenses = transactions.filter(t => t.type === 'expense');
+            const categoryTotals = {};
+            expenses.forEach(t => {
+                const cat = t.category_name || 'General';
+                categoryTotals[cat] = (categoryTotals[cat] || 0) + parseFloat(t.amount);
+            });
+
+            const categoryHtml = Object.keys(categoryTotals).map(cat => `
+                <div class="bg-gray-50 p-2 rounded border border-gray-100 flex justify-between items-center">
+                    <span class="text-xs text-gray-600">${cat}</span>
+                    <span class="text-xs font-bold text-red-500">${UI.formatCurrency(categoryTotals[cat])}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('categorySummary').innerHTML = categoryHtml || '<p class="text-xs text-gray-400 col-span-2 text-center">কোনো খরচ নেই</p>';
         }
     }
 

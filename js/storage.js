@@ -326,6 +326,109 @@ class Store {
             return false;
         }
     }
+    // MFS Methods
+    async getMFSAccounts() {
+        try {
+            const res = await fetch(`${API_URL}/mfs.php`);
+            if (res.ok) {
+                return await res.json();
+            }
+            return [];
+        } catch (e) {
+            console.error('Failed to load MFS accounts:', e);
+            return [];
+        }
+    }
+
+    async addMFSAccount(provider, number, balance) {
+        try {
+            const res = await fetch(`${API_URL}/mfs.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ provider, number, balance })
+            });
+            return await res.json();
+        } catch (e) {
+            console.error('Failed to add MFS account:', e);
+            return { message: 'Failed to add account' };
+        }
+    }
+
+    async updateMFSAccount(id, provider, number) {
+        try {
+            const res = await fetch(`${API_URL}/mfs.php`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, provider, number })
+            });
+            return res.ok;
+        } catch (e) {
+            console.error('Failed to update MFS account:', e);
+            return false;
+        }
+    }
+
+    async deleteMFSAccount(id) {
+        try {
+            const res = await fetch(`${API_URL}/mfs.php?id=${id}`, { method: 'DELETE' });
+            return res.ok;
+        } catch (e) {
+            console.error('Failed to delete MFS account:', e);
+            return false;
+        }
+    }
+
+    // MFS Transaction Methods
+    async getMFSTransactions(accountId) {
+        try {
+            const res = await fetch(`${API_URL}/mfs.php?action=transactions&account_id=${accountId}`);
+            if (res.ok) {
+                return await res.json();
+            }
+            return [];
+        } catch (e) {
+            console.error('Failed to load MFS transactions:', e);
+            return [];
+        }
+    }
+
+    async addMFSTransaction(accountId, type, amount, note) {
+        try {
+            const res = await fetch(`${API_URL}/mfs.php?action=transaction`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ account_id: accountId, type, amount, note })
+            });
+            return res.ok;
+        } catch (e) {
+            console.error('Failed to add MFS transaction:', e);
+            return false;
+        }
+    }
+
+    async deleteMFSTransaction(id) {
+        try {
+            const res = await fetch(`${API_URL}/mfs.php?action=transaction&id=${id}`, { method: 'DELETE' });
+            return res.ok;
+        } catch (e) {
+            console.error('Failed to delete MFS transaction:', e);
+            return false;
+        }
+    }
+
+    async setMFSBalance(accountId, balance) {
+        try {
+            const res = await fetch(`${API_URL}/mfs.php?action=set_balance`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ account_id: accountId, balance })
+            });
+            return res.ok;
+        } catch (e) {
+            console.error('Failed to set MFS balance:', e);
+            return false;
+        }
+    }
 }
 
 const store = new Store();

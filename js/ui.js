@@ -73,5 +73,48 @@ const UI = {
         if (toggle) {
             toggle.checked = isDark;
         }
+    },
+
+    // SweetAlert2 Helpers
+    alert: (title, text, icon = 'info') => {
+        return Swal.fire({
+            title: title,
+            text: text,
+            icon: icon,
+            confirmButtonColor: '#3b82f6',
+            confirmButtonText: 'ঠিক আছে'
+        });
+    },
+
+    confirm: (title, text, confirmText = 'হ্যাঁ', cancelText = 'না') => {
+        return Swal.fire({
+            title: title,
+            text: text,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#3b82f6',
+            confirmButtonText: confirmText,
+            cancelButtonText: cancelText
+        });
+    },
+
+    toast: (title, icon = 'success') => {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        Toast.fire({
+            icon: icon,
+            title: title
+        });
     }
 };

@@ -15,10 +15,18 @@ if ($method === 'POST') {
             // Set session variables
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['name'];
+            $_SESSION['user_role'] = $user['role']; // Store role in session
             
-            // Remove password from response
-            unset($user['password']);
-            echo json_encode(["message" => "Login successful", "user" => $user]);
+            echo json_encode([
+                "message" => "Login successful", 
+                "user" => [
+                    "id" => $user['id'],
+                    "name" => $user['name'],
+                    "phone" => $user['phone'],
+                    "business_name" => $user['business_name'],
+                    "role" => $user['role']
+                ]
+            ]);
         } else {
             http_response_code(401);
             echo json_encode(["message" => "Invalid credentials"]);
@@ -46,7 +54,11 @@ if ($method === 'POST') {
     echo json_encode(["message" => "Logged out successfully"]);
 } elseif ($method === 'GET' && isset($_GET['action']) && $_GET['action'] === 'check') {
     if (isset($_SESSION['user_id'])) {
-        echo json_encode(["isLoggedIn" => true, "user_id" => $_SESSION['user_id']]);
+        echo json_encode([
+            "isLoggedIn" => true, 
+            "user_id" => $_SESSION['user_id'],
+            "role" => $_SESSION['user_role'] ?? 'member'
+        ]);
     } else {
         echo json_encode(["isLoggedIn" => false]);
     }

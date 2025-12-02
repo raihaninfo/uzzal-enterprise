@@ -44,8 +44,6 @@
 <?php include 'includes/footer.php'; ?>
 
 <script>
-    // UI.init('history.html'); // Handled by PHP nav
-
     // Async Init
     (async () => {
         await store.init();
@@ -91,11 +89,11 @@
 
         if (Object.keys(groups).length === 0) {
             list.innerHTML = `
-    <div class="text-center py-10 text-gray-400">
-        <i class="fas fa-search text-4xl mb-2 opacity-50"></i>
-        <p class="text-sm">কোনো তথ্য পাওয়া যায়নি</p>
-    </div>
-`;
+                <div class="text-center py-10 text-gray-400">
+                    <i class="fas fa-search text-4xl mb-2 opacity-50"></i>
+                    <p class="text-sm">কোনো তথ্য পাওয়া যায়নি</p>
+                </div>
+            `;
             return;
         }
 
@@ -106,55 +104,74 @@
             const dateHeader = document.createElement('div');
             dateHeader.className = 'flex items-center gap-2 mt-2 mb-1';
             dateHeader.innerHTML = `
-<div class="h-px bg-gray-200 flex-1"></div>
-<span class="text-xs font-bold text-gray-400">${date}</span>
-<div class="h-px bg-gray-200 flex-1"></div>
-`;
+                <div class="h-px bg-gray-200 flex-1"></div>
+                <span class="text-xs font-bold text-gray-400">${date}</span>
+                <div class="h-px bg-gray-200 flex-1"></div>
+            `;
             list.appendChild(dateHeader);
 
             items.forEach(item => {
                 const isIncome = item.type === 'income';
                 const colorClass = isIncome ? 'text-green-600' : 'text-red-600';
                 const icon = isIncome ? 'fa-arrow-down' : 'fa-arrow-up';
-                const iconBg = isIncome ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600';
-                const categoryLabel = item.category_name && item.category_name !== 'General' ? `<span class="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500 ml-2">${item.category_name}</span>` : '';
-
+                
                 const el = document.createElement('div');
-                el.className = 'bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center hover:bg-gray-50 transition group animate-fade-in';
+                el.className = 'bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center';
                 el.innerHTML = `
-    <div class="flex items-center gap-3">
-        <div class="${iconBg} w-10 h-10 rounded-full flex items-center justify-center">
-            <i class="fas ${icon} text-sm"></i>
-        </div>
-        <div>
-            <h4 class="font-bold text-gray-800 text-sm flex items-center">
-                ${item.source}
-                ${categoryLabel}
-            </h4>
-            <p class="text-xs text-gray-500">${UI.formatTime(item.transaction_date)}</p>
-        </div>
-    </div>
-    <div class="flex items-center gap-3">
-        <span class="font-bold ${colorClass} text-sm">${isIncome ? '+' : '-'}${UI.formatCurrency(item.amount)}</span>
-        <button onclick="window.location.href='index.php?edit=${item.id}'" class="text-gray-300 hover:text-blue-500 transition p-2">
-            <i class="fas fa-edit"></i>
-        </button>
-        <button onclick="deleteItem(${item.id})" class="text-gray-300 hover:text-red-500 transition p-2">
-            <i class="fas fa-trash-alt"></i>
-        </button>
-    </div>
-`;
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full ${isIncome ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'} flex items-center justify-center">
+                            <i class="fas ${icon}"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 text-sm">${item.source}</h4>
+                            <p class="text-xs text-gray-500">${item.category || 'General'}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <h4 class="font-bold ${colorClass}">৳ ${item.amount}</h4>
+                        <div class="flex gap-3 mt-1 justify-end">
+                            <button onclick="editItem(${item.id})" class="text-blue-500 hover:text-blue-700 text-xs"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteItem(${item.id})" class="text-red-500 hover:text-red-700 text-xs"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
                 list.appendChild(el);
             });
         });
     }
 
+    function editItem(id) {
+        const transactions = store.getTransactions();
+        const tx = transactions.find(t => t.id == id);
+        if (tx) {
+            const user = store.getUser();
+            if (user.role !== 'admin' && tx.user_id != user.id) {
+                UI.alert('অনুমতি নেই', 'এটি ডিলেট বা আপডেট করার আপনার অনুমতি নেই', 'error');
+                return;
+            }
+            window.location.href = 'index.php?edit=' + id;
+        }
+    }
+
     async function deleteItem(id) {
-        if (confirm('আপনি কি এই হিসাবটি মুছে ফেলতে চান?')) {
-            await store.deleteTransaction(id);
-            renderHistory();
-            // Update balance header
-            document.getElementById('monthTotal').innerText = 'ব্যালেন্স: ' + UI.formatCurrency(store.getBalance());
+        const transactions = store.getTransactions();
+        const tx = transactions.find(t => t.id == id);
+        
+        if (tx) {
+            const user = store.getUser();
+            if (user.role !== 'admin' && tx.user_id != user.id) {
+                UI.alert('অনুমতি নেই', 'এটি ডিলেট বা আপডেট করার আপনার অনুমতি নেই', 'error');
+                return;
+            }
+            
+            const result = await UI.confirm('মুছে ফেলতে চান?', 'আপনি কি নিশ্চিত যে আপনি এই হিসাবটি মুছে ফেলতে চান?');
+            if (result.isConfirmed) {
+                await store.deleteTransaction(id);
+                renderHistory();
+                // Update balance header
+                document.getElementById('monthTotal').innerText = 'ব্যালেন্স: ' + UI.formatCurrency(store.getBalance());
+                UI.toast('হিসাব মুছে ফেলা হয়েছে');
+            }
         }
     }
 </script>

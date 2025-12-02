@@ -3,8 +3,13 @@ $navItems = [
     ['icon' => 'fa-home', 'label' => 'হোম', 'page' => 'index.php'],
     ['icon' => 'fa-history', 'label' => 'পূর্বের হিসাব', 'page' => 'history.php'],
     ['icon' => 'fa-book', 'label' => 'বাকি', 'page' => 'due.php'],
+    ['icon' => 'fa-mobile-alt', 'label' => 'MFS', 'page' => 'mfs.php'],
     ['icon' => 'fa-chart-pie', 'label' => 'রিপোর্ট', 'page' => 'report.php']
 ];
+
+if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
+    $navItems[] = ['icon' => 'fa-users', 'label' => 'মেম্বার', 'page' => 'members.php'];
+}
 
 $activePage = basename($_SERVER['PHP_SELF']);
 ?>

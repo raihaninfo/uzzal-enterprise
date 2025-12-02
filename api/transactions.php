@@ -13,9 +13,12 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
     case 'GET':
-        // Get all transactions for the logged-in user
-        $stmt = $pdo->prepare("SELECT t.*, c.name as category_name FROM transactions t LEFT JOIN categories c ON t.category_id = c.id WHERE t.user_id = ? ORDER BY t.transaction_date DESC");
-        $stmt->execute([$user_id]);
+        // Get all transactions (Shared Visibility)
+        $stmt = $pdo->query("SELECT t.*, c.name as category_name, u.name as user_name 
+                             FROM transactions t 
+                             LEFT JOIN categories c ON t.category_id = c.id 
+                             LEFT JOIN users u ON t.user_id = u.id 
+                             ORDER BY t.transaction_date DESC");
         $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode($transactions);
         break;
@@ -87,10 +90,17 @@ switch ($method) {
             }
 
             if (count($fields) > 0) {
-                // Add user_id check to ensure ownership
+                // Check if user is admin or owner
+                $user_role = $_SESSION['user_role'] ?? 'member';
                 $params[] = $data->id;
-                $params[] = $user_id;
-                $sql = "UPDATE transactions SET " . implode(", ", $fields) . " WHERE id = ? AND user_id = ?";
+                
+                if ($user_role === 'admin') {
+                    $sql = "UPDATE transactions SET " . implode(", ", $fields) . " WHERE id = ?";
+                } else {
+                    $params[] = $user_id;
+                    $sql = "UPDATE transactions SET " . implode(", ", $fields) . " WHERE id = ? AND user_id = ?";
+                }
+                
                 $stmt = $pdo->prepare($sql);
                 if ($stmt->execute($params)) {
                     echo json_encode(["message" => "Transaction updated"]);
@@ -105,8 +115,17 @@ switch ($method) {
     case 'DELETE':
         // Delete transaction
         if (isset($_GET['id'])) {
-            $stmt = $pdo->prepare("DELETE FROM transactions WHERE id = ? AND user_id = ?");
-            if ($stmt->execute([$_GET['id'], $user_id])) {
+            $user_role = $_SESSION['user_role'] ?? 'member';
+            
+            if ($user_role === 'admin') {
+                $stmt = $pdo->prepare("DELETE FROM transactions WHERE id = ?");
+                $params = [$_GET['id']];
+            } else {
+                $stmt = $pdo->prepare("DELETE FROM transactions WHERE id = ? AND user_id = ?");
+                $params = [$_GET['id'], $user_id];
+            }
+            
+            if ($stmt->execute($params)) {
                 echo json_encode(["message" => "Transaction deleted"]);
             } else {
                 http_response_code(503);
