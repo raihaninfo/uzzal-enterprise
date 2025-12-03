@@ -15,7 +15,7 @@
             <!-- Total Balance Summary -->
             <div class="text-center mb-6">
                 <p class="text-pink-200 text-sm mb-1">মোট ব্যালেন্স</p>
-                <h3 class="font-bold text-4xl text-white">৳ <span id="totalMFSBalance">0</span></h3>
+                <h3 class="font-bold text-4xl text-white"> <span id="totalMFSBalance">0</span></h3>
             </div>
         </div>
 
@@ -43,14 +43,14 @@
                     <div>
                         <label class="text-xs text-gray-500 ml-1">প্রোভাইডার</label>
                         <div class="grid grid-cols-3 gap-2 mt-1">
-                            <button type="button" onclick="selectProvider('Bkash')" class="provider-btn p-2 rounded-xl border-2 border-transparent bg-gray-100 hover:bg-pink-50 text-gray-600 font-bold text-sm transition" data-val="Bkash">
-                                Bkash
+                            <button type="button" onclick="selectProvider('Bkash')" class="provider-btn p-2 rounded-xl border-2 border-transparent bg-white hover:bg-pink-50 transition flex items-center justify-center" data-val="Bkash">
+                                <img src="images/bkash.png" alt="Bkash" class="h-8 object-contain">
                             </button>
-                            <button type="button" onclick="selectProvider('Nagad')" class="provider-btn p-2 rounded-xl border-2 border-transparent bg-gray-100 hover:bg-orange-50 text-gray-600 font-bold text-sm transition" data-val="Nagad">
-                                Nagad
+                            <button type="button" onclick="selectProvider('Nagad')" class="provider-btn p-2 rounded-xl border-2 border-transparent bg-white hover:bg-orange-50 transition flex items-center justify-center" data-val="Nagad">
+                                <img src="images/1679248787Nagad-Logo.webp" alt="Nagad" class="h-8 object-contain">
                             </button>
-                            <button type="button" onclick="selectProvider('Rocket')" class="provider-btn p-2 rounded-xl border-2 border-transparent bg-gray-100 hover:bg-purple-50 text-gray-600 font-bold text-sm transition" data-val="Rocket">
-                                Rocket
+                            <button type="button" onclick="selectProvider('Rocket')" class="provider-btn p-2 rounded-xl border-2 border-transparent bg-white hover:bg-purple-50 transition flex items-center justify-center" data-val="Rocket">
+                                <img src="images/Rocket_ddbl.png" alt="Rocket" class="h-8 object-contain">
                             </button>
                         </div>
                         <input type="hidden" id="mfsProvider">
@@ -169,12 +169,12 @@
             total += parseFloat(acc.balance);
             
             const isOwner = currentUser && currentUser.id == acc.user_id;
-            const providerColors = {
-                'Bkash': 'bg-pink-500',
-                'Nagad': 'bg-orange-500',
-                'Rocket': 'bg-purple-500'
+            const providerLogos = {
+                'Bkash': 'images/bkash.png',
+                'Nagad': 'images/1679248787Nagad-Logo.webp',
+                'Rocket': 'images/Rocket_ddbl.png'
             };
-            const color = providerColors[acc.provider] || 'bg-gray-500';
+            const logoSrc = providerLogos[acc.provider] || '';
 
             const el = document.createElement('div');
             el.className = 'bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center transition hover:shadow-md cursor-pointer';
@@ -195,8 +195,8 @@
 
             el.innerHTML = `
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full ${color} text-white flex items-center justify-center font-bold text-xs shadow-md">
-                        ${acc.provider}
+                    <div class="w-12 h-12 rounded-full bg-white border border-gray-100 flex items-center justify-center shadow-sm overflow-hidden p-1">
+                        <img src="${logoSrc}" alt="${acc.provider}" class="w-full h-full object-contain">
                     </div>
                     <div>
                         <h4 class="font-bold text-gray-800 text-sm">
@@ -306,6 +306,12 @@
 
         if (!amount) {
             UI.toast('টাকার পরিমাণ দিন');
+            return;
+        }
+
+        // Check for insufficient balance
+        if (type === 'out' && parseFloat(amount) > parseFloat(currentEditingAccount.balance)) {
+            UI.toast('পর্যাপ্ত ব্যালেন্স নেই');
             return;
         }
 

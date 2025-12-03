@@ -1,8 +1,6 @@
 -- Database Schema for Uzzal Enterprise
 -- Updated: 2025-12-02
 
-CREATE DATABASE IF NOT EXISTS uzzal_enterprise;
-USE uzzal_enterprise;
 
 -- Users Table
 CREATE TABLE IF NOT EXISTS users (

@@ -20,15 +20,15 @@
             <div class="grid grid-cols-3 gap-2 text-center mt-2">
                 <div class="bg-blue-700/50 p-2 rounded-lg backdrop-blur-sm">
                     <p class="text-blue-200 text-xs">আয়</p>
-                    <h3 class="font-bold text-sm text-green-300">৳ <span id="todayIncome">0</span></h3>
+                    <h3 class="font-bold text-sm text-green-300"> <span id="todayIncome">0</span></h3>
                 </div>
                 <div class="bg-blue-700/50 p-2 rounded-lg backdrop-blur-sm">
                     <p class="text-blue-200 text-xs">ব্যয়</p>
-                    <h3 class="font-bold text-sm text-red-300">৳ <span id="todayExpense">0</span></h3>
+                    <h3 class="font-bold text-sm text-red-300"> <span id="todayExpense">0</span></h3>
                 </div>
                 <div class="bg-blue-700/50 p-2 rounded-lg backdrop-blur-sm border border-blue-400">
                     <p class="text-blue-200 text-xs">ব্যালেন্স</p>
-                    <h3 class="font-bold text-sm">৳ <span id="todayBalance">0</span></h3>
+                    <h3 class="font-bold text-sm"> <span id="todayBalance">0</span></h3>
                 </div>
             </div>
         </div>

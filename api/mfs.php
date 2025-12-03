@@ -50,12 +50,19 @@ switch ($method) {
         if ($action === 'transaction') {
             // Add Transaction (ONLY OWNER)
             if (!empty($data->account_id) && !empty($data->amount) && !empty($data->type)) {
-                // Check ownership
-                $check = $pdo->prepare("SELECT user_id FROM mfs_accounts WHERE id = ?");
+                // Check ownership and balance
+                $check = $pdo->prepare("SELECT user_id, balance FROM mfs_accounts WHERE id = ?");
                 $check->execute([$data->account_id]);
                 $account = $check->fetch();
 
                 if ($account && $account['user_id'] == $_SESSION['user_id']) {
+                    // Check for insufficient balance
+                    if ($data->type === 'out' && $account['balance'] < $data->amount) {
+                        http_response_code(400);
+                        echo json_encode(["message" => "পর্যাপ্ত ব্যালেন্স নেই"]);
+                        exit;
+                    }
+
                     $sql = "INSERT INTO mfs_transactions (mfs_account_id, user_id, type, amount, note) VALUES (?, ?, ?, ?, ?)";
                     $stmt = $pdo->prepare($sql);
                     if ($stmt->execute([$data->account_id, $_SESSION['user_id'], $data->type, $data->amount, $data->note ?? ''])) {

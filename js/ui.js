@@ -4,7 +4,7 @@
 
 const UI = {
     formatCurrency: (amount) => {
-        return '৳ ' + amount.toLocaleString('bn-BD');
+        return '৳ ' + Number(amount).toLocaleString('en-US');
     },
 
     formatDate: (dateString) => {
